@@ -129,7 +129,7 @@ DBALINUCB_rejection_sampling <- function(dt, visitor_reward, alpha=1, K=ncol(vis
   #keep old dt for return theta hat function
   dt.old <- dt
 
-  if(listInteger != 0){
+  if((listInteger != 0)[1]){
     D <- transform_categorial_to_binary(listCategorial= listCategorial, listInteger=listInteger,dt = as.data.frame(dt[,c(listCategorial,listInteger)]))
 
   }else{

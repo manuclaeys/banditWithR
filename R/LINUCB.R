@@ -45,7 +45,7 @@
 #'visitor_reward <-  data.frame(K1,K2,K3)
 #'dt <- as.data.frame(dt)
 #'LINUCB(dt,visitor_reward)
-#'@import tictoc
+#'@import tictoc , matlib
 #'@export
 #LINUCB
 LINUCB <- function(dt, visitor_reward, alpha=1, K=ncol(visitor_reward),IsRewardAreBoolean = FALSE) {
