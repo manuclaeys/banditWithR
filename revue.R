@@ -86,7 +86,7 @@ summary(K2)
 visitor_reward <-  data.frame(K1,K2)
 dt <- as.data.frame(dt)
 
-
+library(matlib)
 linucb_contextual_alloc <- LINUCB(dt,visitor_reward )
 cum_reg_linucb_contextual_alloc <- cumulativeRegretAverage(linucb_contextual_alloc$choice,visitor_reward,dt = dt)
 
@@ -235,6 +235,7 @@ ggplot(comp_reg, aes(c(1:nrow(comp_reg)), y = value, color = Algorithm)) +
 
 
 ##### None linear #####
+rm(list = ls())
 
 ##### Pairewise #####
 set.seed(1234)

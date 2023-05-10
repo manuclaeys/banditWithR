@@ -1,4 +1,4 @@
-#' bandit4abtest Package
+#' banditwithR Package
 #'
 #' Contains functions for imrpove traditionnal A/B test by methodes from bandit theory.
 #'
