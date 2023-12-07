@@ -1,0 +1,4 @@
+*.JSON filter=lfs diff=lfs merge=lfs -text
+.JSON filter=lfs diff=lfs merge=lfs -text
+.csv filter=lfs diff=lfs merge=lfs -text
+data/chevilleDroite.JSON filter=lfs diff=lfs merge=lfs -text
