@@ -2,3 +2,9 @@
 .JSON filter=lfs diff=lfs merge=lfs -text
 .csv filter=lfs diff=lfs merge=lfs -text
 data/chevilleDroite.JSON filter=lfs diff=lfs merge=lfs -text
+data/parcoursuserDatabaseFinalABTastyDataset1_2023.JSON filter=lfs diff=lfs merge=lfs -text
+data/parcoursuserDatabaseFinalABTastyDataset2_2023.JSON filter=lfs diff=lfs merge=lfs -text
+data/parcours_reward_ABTastyDataset1_2023.JSON filter=lfs diff=lfs merge=lfs -text
+data/parcoursrewardFinalABTastyDataset2_2023.JSON filter=lfs diff=lfs merge=lfs -text
+data/ABTastyDataset1_2023LeaveAtLeastOne.csv filter=lfs diff=lfs merge=lfs -text
+data/ABTastyDataset2_2023LeaveAtLeastOne.csv filter=lfs diff=lfs merge=lfs -text
