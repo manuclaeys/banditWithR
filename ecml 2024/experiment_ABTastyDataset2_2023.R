@@ -65,9 +65,9 @@ rm(list=ls()[! ls() %in% c("total")])
 
 
 #presence_time_serie = 10
-presence_time_serie = 10
-time_spend_time_serie = 20
-connexion_time_time_serie = 20
+presence_time_serie = 5
+time_spend_time_serie = 5
+connexion_time_time_serie = 10
 
 
 

@@ -18,13 +18,17 @@ print( getwd() )
 #Importe data
 library(jsonlite)
 library(readr)
+library(stringr)
 
 data.train  <- jsonlite::fromJSON(paste(str_sub( getwd() , end = -10),"data/parcoursuserDatabaseFinalABTastyDataset1_2023.JSON",sep=""), simplifyDataFrame = TRUE)
+
 visitorReward <- read.csv2(paste(str_sub( getwd() , end = -10),"data/ABTastyDataset1_2023LeaveAtLeastOne.csv",sep=""), header = TRUE, sep = ',',colClasses=c("fullVisitorId"="character"))
 visitorReward$X = NULL
-
+#don't use time series with lenght smaller than 2
+data.train <-data.train[data.train$size_time_serie>1 , ]
 
 total <- merge(data.train ,visitorReward, by="fullVisitorId")
+
 
 
 #global summary of data
@@ -37,10 +41,6 @@ summary(as.factor(total$B))
 #here covariates are time series
 listInteger   = c( "presence_time_serie" ,  "time_spend_time_serie" ,  "connexion_time_time_serie" )
 
-#don't use time series with lenght smaller than 2
-total <-total[total$size_time_serie>1 , ]
-#how many transaction do we have now?
-summary(as.factor(total$transactions))
 
 #define time series as numerical time series
 total$presence_time_serie <- lapply(total$presence_time_serie, as.numeric)
@@ -48,7 +48,7 @@ total$connexion_time_time_serie <- lapply(total$connexion_time_time_serie, as.nu
 total$time_spend_time_serie <- lapply(total$time_spend_time_serie, as.numeric)
 
 #remplace NA by 0 (encoding problem for 2 time series)
-for(i in 1:nrow(total)) total$time_spend_time_serie[i] <- lapply(total$time_spend_time_serie[i] ,function(x) replace(x,is.na(x),0))
+#for(i in 1:nrow(total)) total$time_spend_time_serie[i] <- lapply(total$time_spend_time_serie[i] ,function(x) replace(x,is.na(x),0))
 
 library(tidyr)
 total = total %>% drop_na(A)
@@ -58,15 +58,23 @@ total = total %>% drop_na(B)
 total  = total[sample(nrow(total)),]
 
 
-
 rm(list=ls()[! ls() %in% c("total")])
 
+#define time series as numerical time series
+total$presence_time_serie <- lapply(total$presence_time_serie, as.numeric)
+total$connexion_time_time_serie <- lapply(total$connexion_time_time_serie, as.numeric)
+total$time_spend_time_serie <- lapply(total$time_spend_time_serie, as.numeric)
 
-presence_time_serie = 12
-time_spend_time_serie = 19
-connexion_time_time_serie = 20
+#remplace NA by 0 (encoding problem for 2 time series)
+for(i in 1:nrow(total)) total$time_spend_time_serie[i] <- lapply(total$time_spend_time_serie[i] ,function(x) replace(x,is.na(x),0))
 
-#ENFIIIIn
+
+
+presence_time_serie = 3
+time_spend_time_serie = 5
+connexion_time_time_serie = 5
+
+
 #presence_time_serie = 5
 #time_spend_time_serie = 5
 #connexion_time_time_serie = 10
@@ -111,7 +119,7 @@ parameter_size = 0.3
   #Evaluation
   choiceList <- resVal$dbactreeucb_rejection_sampling_bandit_alloc$choice
   summary(as.factor(choiceList))
-  rewardABtest <- visitor_reward[ resVal$dbactreeucb_rejection_sampling_bandit_alloc$first_train_element : nrow(dt)   , ]
+  rewardABtest <- visitor_reward[ resVal$dbactreeucb_rejection_sampling_bandit_alloc$first_train_element: nrow(dt)   , ]
   plot(resVal$cum_rew_dbactreeucb_rejection_sampling_alloc, type='l')
   averageReward_dbactreeucb = max(resVal$cum_rew_dbactreeucb_rejection_sampling_alloc)/length(resVal$cum_rew_dbactreeucb_rejection_sampling_alloc)
   averageReward_dbactreeucb
@@ -148,7 +156,7 @@ parameter_size = 0.3
 
   library(matlib)
     linucb_alloc  <- LinucbRejectionSamplingBanditObjectEvaluation(
-    dt = dt[ resVal$dbactreeucb_rejection_sampling_bandit_alloc$first_train_element : nrow(dt)   , explanatory_variable],
+    dt = dt[ resVal$dbactreeucb_rejection_sampling_bandit_alloc$first_train_element: nrow(dt)   , explanatory_variable],
     visitor_reward =  rewardABtest,
     alpha = 1,
     K = ncol(visitor_reward),
@@ -186,11 +194,16 @@ parameter_size = 0.3
   ctreeucb_alloc  <- ctreeucbBanditObjectEvaluation(
     dt = dt[ , explanatory_variable],
     visitor_reward = visitor_reward,
-    ctree_parameters_control = parameters
+    ctree_parameters_control = parameters,
+    average = TRUE
   )
 
   #Evaluation
+
   choiceListCTREEUCB <-  ctreeucb_alloc$ctreeucb_bandit_alloc$choice
+  temp = reward_cumulative(choice=choiceListCTREEUCB,
+                    visitor_reward=visitor_reward[ctreeucb_alloc$ctreeucb_bandit_alloc$first_train_element:nrow(visitor_reward),])
+  print(max(temp)/length(temp), sep = " " )
   summary(as.factor(choiceListCTREEUCB))
 
   regret4 <- cumulativeRegret(choiceListCTREEUCB,rewardABtest)
@@ -207,8 +220,11 @@ parameter_size = 0.3
 
 
   ### Random ###
-  unif_alloc <- uniform_bandit_object_evaluation(visitor_reward=visitor_reward[ resVal$dbactreeucb_rejection_sampling_bandit_alloc$first_train_element : nrow(dt)   , ],average = TRUE, IsRewardAreBoolean = FALSE)
+  unif_alloc <- uniform_bandit_object_evaluation(visitor_reward=visitor_reward[ resVal$dbactreeucb_rejection_sampling_bandit_alloc$first_train_element: nrow(dt)   , ],average = TRUE, IsRewardAreBoolean = FALSE)
   choiceListUNIFORM <- unif_alloc$uniform_bandit_alloc$choice
+  temp = reward_cumulative(choice=choiceListUNIFORM,
+                           visitor_reward=visitor_reward[ctreeucb_alloc$ctreeucb_bandit_alloc$first_train_element:nrow(visitor_reward),])
+  print(max(temp)/length(temp), sep = " " )
   summary(as.factor(choiceListUNIFORM))
   regret5 <- cumulativeRegret(choiceListUNIFORM,rewardABtest)
   ##############
