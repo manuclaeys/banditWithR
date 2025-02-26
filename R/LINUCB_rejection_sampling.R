@@ -81,7 +81,6 @@ LINUCB_rejection_sampling <- function(dt, visitor_reward, alpha=1, K=ncol(visito
   #time keeper
   library(tictoc)
   tic()
-  print(i)
   #initialization
   for (j in 1:K) {
     A[,,j]= diag(n_f)
